@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- TITOLO E DESCRIZIONE BASE -->
+    <title>JustMax - Board Game Designer Portfolio</title>
+    <meta name="description" content="Scopri i prototipi di giochi da tavolo creati da Massimiliano Sabato (JustMax). Puzzle spaziali, party game e meccaniche uniche ti aspettano!">
+
+    <!-- FAVICON -->
+    <!-- Puoi sostituire "images/favicon.png" con la tua icona reale -->
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <!-- Favicon di fallback (un dado) finché non carichi la tua immagine -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
+
+    <!-- OPEN GRAPH (Per anteprime su WhatsApp, Facebook, LinkedIn) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://TUO-NOME-UTENTE.github.io/TUA-REPO/"> <!-- SOSTITUISCI CON IL TUO LINK GITHUB PAGES -->
+    <meta property="og:title" content="JustMax - Board Game Designer Portfolio">
+    <meta property="og:description" content="Esplora i miei prototipi: Vietri, VideoClub, 4 Dadi in Padella e Sliding Kitties.">
+    <meta property="og:image" content="https://TUO-NOME-UTENTE.github.io/TUA-REPO/images/social-preview.jpg"> <!-- IMMAGINE DI ANTEPRIMA -->
+
+    <!-- TWITTER CARDS (Per anteprime su X/Twitter) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://TUO-NOME-UTENTE.github.io/TUA-REPO/">
+    <meta name="twitter:title" content="JustMax - Board Game Designer Portfolio">
+    <meta name="twitter:description" content="Esplora i miei prototipi di giochi da tavolo.">
+    <meta name="twitter:image" content="https://TUO-NOME-UTENTE.github.io/TUA-REPO/images/social-preview.jpg">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome & Flag Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css" />
+    
+    <!-- Zdog per il dado 3D -->
+    <script src="https://unpkg.com/zdog@1/dist/zdog.dist.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .game-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+        .lang-active { border-bottom: 2px solid #3b82f6; opacity: 1; transform: scale(1.1); }
+        .lang-inactive { opacity: 0.5; filter: grayscale(50%); }
+        .lang-btn { transition: all 0.2s ease-in-out; }
+        .lang-btn:hover { opacity: 1; filter: grayscale(0%); transform: scale(1.1); }
+        
+        /* Cursore personalizzato per il dado 3D interattivo */
+        .zdog-canvas { cursor: grab; }
+        .zdog-canvas:active { cursor: grabbing; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                
+                <!-- Brand Identity (con Dado 3D Animato) -->
+                <div class="flex items-center cursor-pointer" onclick="navigate('home')" title="Torna alla Home">
+                    <canvas class="zdog-canvas mr-2" width="44" height="44"></canvas>
+                    <span class="font-bold text-xl tracking-tight">Just<span class="text-blue-600">Max</span></span>
+                </div>
+                
+                <!-- Links Desktop -->
+                <div class="hidden md:flex space-x-6 text-sm font-semibold text-gray-600 items-center ml-10">
+                    <button onclick="navigate('home')" class="hover:text-blue-600 transition" id="nav-home">Home</button>
+                    <button onclick="navigate('vietri')" class="hover:text-blue-600 transition">Vietri</button>
+                    <button onclick="navigate('videoclub')" class="hover:text-blue-600 transition">VideoClub</button>
+                    <button onclick="navigate('dadi')" class="hover:text-blue-600 transition">4 Dadi in Padella</button>
+                    <button onclick="navigate('kitties')" class="hover:text-blue-600 transition">Sliding Kitties</button>
+                </div>
+
+                <!-- Language Selector -->
+                <div class="flex items-center space-x-3 border-l pl-4 ml-2">
+                    <button onclick="setLanguage('it')" id="lang-it" class="lang-btn text-2xl rounded-sm overflow-hidden shadow-sm" title="Italiano"><span class="fi fi-it"></span></button>
+                    <button onclick="setLanguage('en')" id="lang-en" class="lang-btn text-2xl rounded-sm overflow-hidden shadow-sm" title="English"><span class="fi fi-gb"></span></button>
+                    <button onclick="setLanguage('fr')" id="lang-fr" class="lang-btn text-2xl rounded-sm overflow-hidden shadow-sm" title="Français"><span class="fi fi-fr"></span></button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center ml-4">
+                    <button id="mobile-menu-btn" class="text-gray-600 focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 pt-2 pb-4 space-y-2 shadow-inner">
+            <button onclick="navigate('home')" class="block w-full text-left py-2 text-gray-700 font-semibold hover:text-blue-600" id="mob-nav-home">Home</button>
+            <button onclick="navigate('vietri')" class="block w-full text-left py-2 text-gray-700 font-semibold hover:text-blue-600">Vietri</button>
+            <button onclick="navigate('videoclub')" class="block w-full text-left py-2 text-gray-700 font-semibold hover:text-blue-600">VideoClub</button>
+            <button onclick="navigate('dadi')" class="block w-full text-left py-2 text-gray-700 font-semibold hover:text-blue-600">4 Dadi in Padella</button>
+            <button onclick="navigate('kitties')" class="block w-full text-left py-2 text-gray-700 font-semibold hover:text-blue-600">Sliding Kitties</button>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main id="app-content" class="flex-grow max-w-6xl mx-auto px-4 py-8 w-full"></main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 mt-12">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">© 2026 Massimiliano Sabato (JustMax) - Board Game Designer. <span id="footer-text">Prototipi a scopo di playtest e pitching.</span></p>
+        </div>
+    </footer>
+
+    <!-- App Logic & Data -->
+    <script>
+        // --- INIZIO LOGICA DADO ZDOG ---
+        const { Illustration, Group, Anchor, Rect, TAU, Ellipse } = Zdog;
+        const canvasElement = document.querySelector('.zdog-canvas');
+        const illustration = new Illustration({
+            element: canvasElement,
+            dragRotate: true,
+            zoom: 0.35, // Ridimensionato per la Navbar
+        });
+
+        const dice = new Anchor({ addTo: illustration });
+        const faces = new Group({ addTo: dice });
+
+        // Colore Blu Tailwind (uguale a text-blue-600)
+        const diceColor = '#2563eb'; 
+
+        const face = new Rect({
+            addTo: faces,
+            stroke: 50,
+            width: 50,
+            height: 50,
+            color: diceColor,
+            translate: { z: -25 },
+        });
+
+        face.copy({ rotate: { x: TAU / 4 }, translate: { y: 25 } });
+        face.copy({ rotate: { x: TAU / 4 }, translate: { y: -25 } });
+        face.copy({ translate: { z: 25 } });
+
+        const one = new Ellipse({
+            addTo: dice,
+            diameter: 15,
+            stroke: false,
+            fill: true,
+            color: 'hsl(0, 0%, 100%)',
+            translate: { z: 50 },
+        });
+
+        const two = new Group({ addTo: dice, rotate: { x: TAU / 4 }, translate: { y: 50 } });
+        one.copy({ addTo: two, translate: { y: 20 } });
+        one.copy({ addTo: two, translate: { y: -20 } });
+
+        const three = new Group({ addTo: dice, rotate: { y: TAU / 4 }, translate: { x: 50 } });
+        one.copy({ addTo: three, translate: { z: 0 } });
+        one.copy({ addTo: three, translate: { x: 20, y: -20, z: 0 } });
+        one.copy({ addTo: three, translate: { x: -20, y: 20, z: 0 } });
+
+        const four = new Group({ addTo: dice, rotate: { y: TAU / 4 }, translate: { x: -50 } });
+        two.copyGraph({ addTo: four, rotate: { x: 0 }, translate: { x: 20, y: 0 } });
+        two.copyGraph({ addTo: four, rotate: { x: 0 }, translate: { x: -20, y: 0 } });
+
+        const five = new Group({ addTo: dice, rotate: { x: TAU / 4 }, translate: { y: -50 } });
+        four.copyGraph({ addTo: five, rotate: { y: 0 }, translate: { x: 0 } });
+        one.copy({ addTo: five, translate: { z: 0 } });
+
+        const six = new Group({ addTo: dice, translate: { z: -50 } });
+        two.copyGraph({ addTo: six, rotate: { x: 0, z: TAU / 4 }, translate: { x: 0, y: 0 } });
+        four.copyGraph({ addTo: six, rotate: { y: 0 }, translate: { x: 0 } });
+
+        function animateDice() {
+            illustration.updateRenderGraph();
+            dice.rotate.x += 0.005;
+            dice.rotate.y -= 0.01;
+            requestAnimationFrame(animateDice);
+        }
+        animateDice();
+        // --- FINE LOGICA DADO ZDOG ---
+
+
+        // --- INIZIO LOGICA PORTFOLIO ---
+        let currentLanguage = 'it';
+        let currentPage = 'home'; 
+
+        const uiData = {
+            it: {
+                homeTitle: "Ciao, sono Massimiliano! 👋",
+                homeSub: "Di giorno informatico per il Ministero della Cultura, di notte creatore di mondi in scatola.",
+                homeDesc: "Ho già un titolo in uscita in Italia (\"4 Dadi in Padella\") e oggi cerco editori e partner per i miei nuovi progetti. Clicca sui giochi qui sotto per scoprire i pitch visivi!",
+                myPrototypes: "I Miei Prototipi",
+                seePitch: "Vedi Pitch",
+                backBtn: "Torna ai giochi",
+                players: "Giocatori",
+                time: "Durata",
+                age: "Età",
+                hookTitle: "Il Tema & L'Idea",
+                flowTitle: "Il Flusso di Gioco",
+                twistTitle: "Il \"Twist\" (La USP)",
+                closeTitle: "Vittoria & Chiusura",
+                emergencyTitle: "Scaletta di Emergenza",
+                emergencySub: "Se perdi il filo, usa questa lista:",
+                footer: "Prototipi a scopo di playtest e pitching."
+            },
+            en: {
+                homeTitle: "Hi, I'm Massimiliano! 👋",
+                homeSub: "By day an IT guy for the Ministry of Culture, by night a board game creator.",
+                homeDesc: "I already have a game coming out in Italy (\"4 Dadi in Padella\") and today I'm looking for publishers and partners for my new projects. Click on the games below to explore the visual pitches!",
+                myPrototypes: "My Prototypes",
+                seePitch: "See Pitch",
+                backBtn: "Back to games",
+                players: "Players",
+                time: "Time",
+                age: "Age",
+                hookTitle: "The Hook & Theme",
+                flowTitle: "Core Flow",
+                twistTitle: "The Twist (USP)",
+                closeTitle: "Winning & Closing",
+                emergencyTitle: "Pitch Emergency Card",
+                emergencySub: "Use this list if you forget the speech:",
+                footer: "Prototypes for playtesting and pitching purposes."
+            },
+            fr: {
+                homeTitle: "Salut, je suis Massimiliano ! 👋",
+                homeSub: "Le jour, informaticien pour le Ministère de la Culture, la nuit, créateur de jeux de société.",
+                homeDesc: "J'ai déjà un jeu qui sort en Italie (\"4 Dadi in Padella\") et aujourd'hui je cherche des éditeurs et partenaires pour mes nouveaux projets. Cliquez sur les jeux ci-dessous pour découvrir les pitchs visuels !",
+                myPrototypes: "Mes Prototypes",
+                seePitch: "Voir le Pitch",
+                backBtn: "Retour aux jeux",
+                players: "Joueurs",
+                time: "Durée",
+                age: "Âge",
+                hookTitle: "Le Thème & L'Idée",
+                flowTitle: "Le Déroulement",
+                twistTitle: "Le \"Twist\" (L'USP)",
+                closeTitle: "Victoire & Fin",
+                emergencyTitle: "Fiche d'Urgence",
+                emergencySub: "Si vous perdez le fil, utilisez cette liste :",
+                footer: "Prototypes à des fins de playtest et de pitch."
+            }
+        };
+
+        const gamesData = {
+            vietri: {
+                id: 'vietri',
+                title: 'Vietri - Maestri della Ceramica',
+                icon: '🎨', // Emoji Tavolozza
+                color: 'blue',
+                stats: { players: '2-4', time: '45-60 min', age: '10+' },
+                tags: { it: ['Worker Placement', 'Puzzle Spaziale'], en: ['Worker Placement', 'Spatial Puzzle'], fr: ['Pose d\'ouvriers', 'Puzzle Spatial'] },
+                images: { main: '[Immagine della Plancia Tornio]', secondary: '[Immagine del Tabellone 5 Zone]' },
+                it: {
+                    hook: "Tutto è nato ascoltando i racconti di un caro amico, un vero maestro ceramista di Vietri sul Mare. Dietro un'opera d'arte c'è un mondo intero: fatica, pianificazione e un'intera bottega da gestire.",
+                    flow: "In ogni round, che rappresenta una giornata, piazzerete i vostri 3 assistenti in una delle 5 zone: al Fiume per l'argilla grigia, al Mercato per i colori, o in Piazza per le commissioni.",
+                    twist: "Il vero motore del gioco è la plancia personale: il Tornio Asimmetrico. Con l'azione Bottega, spendete scatti per muovere due ruote concentriche indipendenti. È un puzzle spaziale tattile: dovete allineare fisicamente l'argilla grigia (interna) con i colori esatti (esterna).",
+                    closing: "Una volta trovato l'incastro perfetto, mandate un assistente al Forno per cuocere l'opera e fare punti prestigio. Vi va di fare un giro sul tornio?",
+                    emergency: null
+                },
+                en: {
+                    hook: "Inspired by a real ceramic workshop in my hometown, Vietri. The game is about the hard work behind beautiful art.",
+                    flow: "Every round is a day. You have 3 workers. You place them to gather resources: to the River for grey clay, to the Market for colors, or to the Square for new contracts.",
+                    twist: "The unique selling point is your personal board: the Potter's Wheel. It's a tactile spatial puzzle. You spend actions to spin two independent rings. You must physically align the grey clay on the inside with the right colors on the outside.",
+                    closing: "When the alignment is perfect, you go to the Kiln to fire the masterpiece and score points. Do you want to try a few rounds?",
+                    emergency: [
+                        "45 minutes. 2 to 4 players. Worker placement.",
+                        "You run a ceramic workshop in Italy.",
+                        "Place 3 workers to get grey clay and colors.",
+                        "The Twist: Spin the rings on the Potter's Wheel to match clay and colors.",
+                        "Fire the ceramic in the Kiln to win."
+                    ]
+                },
+                fr: {
+                    hook: "Tout a commencé en écoutant les histoires d'un ami, un vrai maître céramiste de Vietri sul Mare. Derrière une œuvre d'art, il y a tout un monde : travail acharné, planification et tout un atelier à gérer.",
+                    flow: "À chaque tour, représentant une journée, vous placez 3 assistants dans 5 zones : au Fleuve pour l'argile grise, au Marché pour les couleurs, ou sur la Place pour les commandes.",
+                    twist: "Le moteur du jeu est le plateau personnel : le Tour de Potier Asymétrique. Vous dépensez des actions pour tourner deux roues concentriques indépendantes. C'est un puzzle spatial tactile : vous devez physiquement aligner l'argile grise à l'intérieur avec la bonne couleur à l'extérieur.",
+                    closing: "Quand l'alignement est parfait, envoyez un assistant au Four pour cuire l'œuvre et marquer des points. Envie de faire un tour de potier ?",
+                    emergency: [
+                        "45 minutes. 2 à 4 joueurs. Pose d'ouvriers.",
+                        "Vous gérez un atelier de céramique en Italie.",
+                        "Placez 3 ouvriers pour obtenir de l'argile et des couleurs.",
+                        "Le Twist : Tournez les anneaux du tour pour aligner l'argile et la couleur.",
+                        "Cuisez la céramique dans le Four pour gagner."
+                    ]
+                }
+            },
+            videoclub: {
+                id: 'videoclub',
+                title: 'VideoClub',
+                icon: '📼', // Emoji VHS
+                color: 'purple',
+                stats: { players: '2-4', time: '45 min', age: '8+' },
+                tags: { it: ['Semi-Coop', 'Pattern Matching', 'Nostalgia 90s'], en: ['Semi-Coop', 'Pattern Matching', '90s Nostalgia'], fr: ['Semi-Coop', 'Combinaison', 'Nostalgie 90s'] },
+                images: { main: '[Immagine del Desk Circolare con le VHS]', secondary: '[Immagine degli Scaffali Condivisi]' },
+                it: {
+                    hook: "Siamo i commessi dell'ultimo videonoleggio della città. Lo streaming ci sta distruggendo! È un gioco semi-cooperativo: dobbiamo collaborare per salvare lo store, ma solo chi fa più punti sarà l'Impiegato del Mese.",
+                    flow: "Il flusso è rapido. Al centro c'è il desk circolare. Al vostro turno muovete il meeple del Manager e prelevate in blocco tutte le mini-VHS e gli Snack da quello spazio.",
+                    twist: "Il bello è il piazzamento per completare gli obiettivi (pattern). La genialità è che non avete solo il vostro scaffale, ma gestite scaffali condivisi con i giocatori seduti accanto a voi! E attenzione: se gettate troppe cassette nel Box Riconsegna, lo store accumula Fallimenti.",
+                    closing: "5 obiettivi comuni completati = store salvo. 4 fallimenti = andiamo tutti a casa. Regole semplici, poteri degli Snack e tantissima interazione. Riavvolgiamo il nastro?",
+                    emergency: null
+                },
+                en: {
+                    hook: "We are the clerks of the last video store in town. Streaming is killing us! It’s a semi-cooperative game: we must work together to save the store, but only one wins as Best Employee.",
+                    flow: "The turn is very fast. You move the Manager meeple on the central desk and take all the mini-VHS tapes and snacks from that pile.",
+                    twist: "Now, the puzzle! You must place the VHS to complete patterns. But the twist is: you share shelves with the players next to you! It creates great interaction. Also, if the Return Box gets full of discarded tapes, the store gets closer to bankruptcy!",
+                    closing: "Complete 5 common goals, and we win together. Get 4 failures, and the store closes. Want to rewind the tape and play?",
+                    emergency: [
+                        "We are video store clerks. 90s nostalgia.",
+                        "Semi-cooperative. Save the store together, but only one winner.",
+                        "Move the manager. Take VHS and snacks.",
+                        "The Twist: Pattern building, but we share shelves between players!",
+                        "Don't fill the Return Box, or we lose the game."
+                    ]
+                },
+                fr: {
+                    hook: "Nous sommes les employés du dernier vidéo-club de la ville. Le streaming nous détruit ! C'est un jeu semi-coopératif : nous devons collaborer pour sauver la boutique, mais seul celui qui marque le plus de points sera l'Employé du Mois.",
+                    flow: "Le tour est rapide. Au centre se trouve le bureau circulaire. À votre tour, déplacez le Manager et prenez toutes les mini-VHS et les Snacks de cet espace.",
+                    twist: "Le meilleur est le placement pour compléter des modèles (pattern). L'idée géniale est que vous n'avez pas seulement votre étagère, mais des étagères partagées avec vos voisins ! Attention : si la Boîte de Retour est pleine, la boutique accumule des Échecs.",
+                    closing: "5 objectifs communs = boutique sauvée. 4 échecs = on rentre tous à la maison. Règles simples, pouvoirs des Snacks et grande interaction. On rembobine ?",
+                    emergency: [
+                        "Employés de vidéo-club. Nostalgie des années 90.",
+                        "Semi-coopératif. Sauvez la boutique, mais un seul gagnant.",
+                        "Déplacez le manager. Prenez les VHS et les snacks.",
+                        "Le Twist : Création de motifs, mais nous partageons les étagères !",
+                        "Ne remplissez pas la Boîte de Retour, ou nous perdons la partie."
+                    ]
+                }
+            },
+            dadi: {
+                id: 'dadi',
+                title: '4 Dadi in Padella',
+                icon: '🍳', // Emoji Padella
+                color: 'orange',
+                stats: { players: '2-8', time: '10 min', age: '8+' },
+                tags: { it: ['Party Game', 'Destrezza', 'Tempo Reale'], en: ['Party Game', 'Dexterity', 'Real-Time'], fr: ['Jeu d\'Ambiance', 'Dextérité', 'Temps Réel'] },
+                images: { main: '[Immagine di 4 Dadi in una Padella Giocattolo]', secondary: '[Immagine delle Carte Azione Esilaranti]' },
+                it: {
+                    hook: "Siete dei cuochi impazziti che devono realizzare ricette... facendo letteralmente saltare i dadi in padella! È un gioco di destrezza in tempo reale, rapidissimo e caotico.",
+                    flow: "Si gira una carta Ricetta. Ogni giocatore impugna la sua padella e 4 dadi. Al via, tutti insieme dovrete spadellare i dadi (lanciandoli fisicamente in aria con la padella) finché non ottenete l'esatta combinazione della ricetta.",
+                    twist: "Prima del via si gira anche una Carta Azione: dovrete spadellare mentre cantate, mentre imitate uno zombie, o ballando! E per i veri masterchef c'è la modalità Gourmet: l'impiattamento finale va fatto usando delle vere pinzette.",
+                    closing: "Il primo che completa la ricetta urla il nome del piatto e fa punti. Chi ha più punti dopo 5 round vince. È caotico, esilarante e dura 10 minuti. Spadelliamo?",
+                    emergency: null
+                },
+                en: {
+                    hook: "You are crazy chefs trying to cook recipes by literally flipping dice in a frying pan! It is a real-time dexterity party game.",
+                    flow: "Every round, we reveal a Recipe card. You take your pan and 4 colored dice. Ready, set, go! You must physically flip the dice inside the pan until you get the exact numbers required by the recipe.",
+                    twist: "But wait, there is a twist! We also reveal an Action Card. You must flip the dice while acting like a zombie, dancing, or standing on one leg! In 'Gourmet mode', you must carefully plate the dice using tweezers!",
+                    closing: "The first player to get the right dice shouts 'Ready!' and scores points. It is 10 minutes of pure, chaotic fun. Want to try and flip some dice?",
+                    emergency: [
+                        "Party game. 2 to 8 players. 10 minutes.",
+                        "You are crazy chefs.",
+                        "Look at the recipe. Flip the dice in the pan to match the numbers.",
+                        "The Twist: Action cards! Flip the dice while dancing or acting like a zombie!",
+                        "First one to finish shouts and wins points."
+                    ]
+                },
+                fr: {
+                    hook: "Vous êtes des chefs fous qui doivent réaliser des recettes... en faisant littéralement sauter les dés dans la poêle ! C'est un jeu de dextérité en temps réel, rapide et chaotique.",
+                    flow: "On révèle une carte Recette. Chaque joueur prend sa poêle et 4 dés. Au signal, tous ensemble, vous devez faire sauter les dés (physiquement avec la poêle) jusqu'à obtenir la combinaison exacte de la recette.",
+                    twist: "Avant le départ, on révèle une Carte Action : faire sauter les dés en chantant, en imitant un zombie ou en dansant ! Le mode 'Gourmet' exige de dresser l'assiette avec de vraies pinces.",
+                    closing: "Le premier qui complète la recette crie le nom du plat et marque des points. 10 minutes de chaos hilarant. On cuisine ?",
+                    emergency: [
+                        "Jeu d'ambiance. 2 à 8 joueurs. 10 minutes.",
+                        "Vous êtes des chefs fous.",
+                        "Faites sauter les dés dans la poêle pour faire correspondre les chiffres.",
+                        "Le Twist : Cartes d'action ! Faites sauter les dés en dansant ou comme un zombie !",
+                        "Le premier à finir crie et gagne des points."
+                    ]
+                }
+            },
+            kitties: {
+                id: 'kitties',
+                title: 'Sliding Kitties',
+                icon: '🐈', // Emoji Gattino
+                color: 'pink',
+                stats: { players: '2-4', time: '15-20 min', age: '7+' },
+                tags: { it: ['Puzzle Party', 'Scorrimento Tessere', 'Frenetico'], en: ['Puzzle Party', 'Tile Sliding', 'Frenetic'], fr: ['Puzzle Party', 'Glissement de Tuiles', 'Frénétique'] },
+                images: { main: '[Immagine della Matrice di Tessere Gattino]', secondary: '[Immagine del Gomitolo di Feltro scagliato]' },
+                it: {
+                    hook: "Siete dei gattini furbetti che devono creare schemi di colori e simboli, facendo scivolare le tessere e facendosi un sacco di dispetti!",
+                    flow: "Al centro del tavolo c'è una griglia di tessere. La meccanica principale è lo 'Slide': prendete una tessera dalla mano e la spingete dentro una riga o colonna, facendo scorrere le altre e facendo 'uscire' una nuova tessera dall'altra parte.",
+                    twist: "Il vero selling point è l'interazione fisica e vocale! Potete lanciare un vero gomitolo di feltro sulla plancia per bloccare un incrocio. Inoltre, appena completate un obiettivo segreto, dovete letteralmente miagolare ad alta voce per reclamarlo. Ma un avversario può abbaiare per bloccarvi!",
+                    closing: "Il primo gatto che completa 5 obiettivi innesca la fine della partita. È un puzzle tattico per il cervello, ma esilarante al tavolo. Vi va di fare due fusa?",
+                    emergency: null
+                },
+                en: {
+                    hook: "You are sneaky kittens trying to make color patterns by sliding tiles and messing with your friends!",
+                    flow: "On your turn, you take a tile from your hand and push it into a row or column of the central grid. Everything slides, and another tile pops out the other side. It's a dynamic spatial puzzle.",
+                    twist: "The unique selling point is the chaotic interaction! You can literally throw a physical felt yarn ball onto the grid to block a spot! Also, when you complete a secret pattern, you must physically MEOW out loud to score! But watch out: an opponent can bark like a dog to stop you!",
+                    closing: "The first player to score 5 patterns wins the game. It is tactical, fast, and very funny. Want to slide some kitties?",
+                    emergency: [
+                        "Puzzle party game. 2 to 4 players. 15 minutes.",
+                        "You are sneaky cats making color patterns.",
+                        "Push a tile into the grid. Slide the row to make patterns.",
+                        "The Twist: Throw a yarn ball to block the board! And you must MEOW out loud to score!",
+                        "Complete 5 patterns to win."
+                    ]
+                },
+                fr: {
+                    hook: "Vous êtes des chatons sournois qui doivent créer des motifs de couleurs et de symboles en faisant glisser des tuiles et en embêtant vos amis !",
+                    flow: "Au centre, une grille de tuiles. La mécanique principale est le 'Slide' : prenez une tuile de votre main et poussez-la dans une ligne ou une colonne. Tout glisse et une nouvelle tuile sort de l'autre côté.",
+                    twist: "Le point fort est l'interaction physique et vocale ! Lancez une vraie pelote de laine en feutre sur le plateau pour bloquer une case. Dès que vous complétez un objectif, vous devez littéralement MIAULER à voix haute ! Mais un adversaire peut aboyer pour vous bloquer !",
+                    closing: "Le premier chat qui complète 5 objectifs gagne. C'est un puzzle tactique mais hilarant. Envie de ronronner ?",
+                    emergency: [
+                        "Puzzle d'ambiance. 2 à 4 joueurs. 15 minutes.",
+                        "Vous êtes des chats sournois créant des motifs de couleurs.",
+                        "Poussez une tuile dans la grille. Faites glisser pour créer des motifs.",
+                        "Le Twist : Lancez une pelote de laine pour bloquer ! Et MIAULEZ pour marquer !",
+                        "Complétez 5 motifs pour gagner."
+                    ]
+                }
+            }
+        };
+
+        const contentDiv = document.getElementById('app-content');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        function updateLanguageFlags() {
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('lang-active');
+                btn.classList.add('lang-inactive');
+            });
+            document.getElementById(`lang-${currentLanguage}`).classList.remove('lang-inactive');
+            document.getElementById(`lang-${currentLanguage}`).classList.add('lang-active');
+            
+            document.getElementById('nav-home').innerText = currentLanguage === 'fr' ? 'Accueil' : 'Home';
+            document.getElementById('mob-nav-home').innerText = currentLanguage === 'fr' ? 'Accueil' : 'Home';
+            document.getElementById('footer-text').innerText = uiData[currentLanguage].footer;
+        }
+
+        function navigate(page) {
+            mobileMenu.classList.add('hidden'); 
+            window.scrollTo(0,0);
+            currentPage = page;
+            
+            if (page === 'home') {
+                renderHome();
+            } else {
+                renderPitch(page);
+            }
+        }
+
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            updateLanguageFlags();
+            if(currentPage === 'home') {
+                renderHome();
+            } else {
+                renderPitch(currentPage);
+            }
+        }
+
+        function renderHome() {
+            const ui = uiData[currentLanguage];
+            let html = `
+                <div class="fade-in">
+                    <div class="bg-gradient-to-r from-blue-700 to-indigo-800 rounded-2xl p-8 text-white mb-10 shadow-xl relative overflow-hidden">
+                        <div class="relative z-10 md:w-2/3">
+                            <h1 class="text-4xl md:text-5xl font-bold mb-4">${ui.homeTitle}</h1>
+                            <p class="text-xl md:text-2xl font-light mb-6 opacity-90">${ui.homeSub}</p>
+                            <p class="mb-4 text-blue-100">
+                                ${ui.homeDesc}
+                            </p>
+                        </div>
+                        <i class="fa-solid fa-chess-knight absolute -bottom-10 -right-10 text-[200px] text-white opacity-10 transform -rotate-12"></i>
+                    </div>
+
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-blue-500 inline-block pb-1">${ui.myPrototypes}</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            `;
+
+            for (const key in gamesData) {
+                const game = gamesData[key];
+                
+                // Riconosce se è un'icona di FontAwesome o una semplice Emoji
+                const isFaIcon = game.icon.startsWith('fa-');
+                const iconHtml = isFaIcon 
+                    ? `<i class="fa-solid ${game.icon}"></i>` 
+                    : `<span>${game.icon}</span>`;
+
+                html += `
+                    <div onclick="navigate('${game.id}')" class="bg-white rounded-xl shadow-md p-6 cursor-pointer game-card border-t-4 border-${game.color}-500 flex flex-col h-full transition-all">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-full bg-${game.color}-100 flex items-center justify-center text-${game.color}-600 text-2xl mr-4">
+                                ${iconHtml}
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-800">${game.title}</h3>
+                        </div>
+                        <div class="flex space-x-2 mb-4">
+                            ${game.tags[currentLanguage].map(tag => `<span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full font-semibold">${tag}</span>`).join('')}
+                        </div>
+                        <p class="text-gray-600 flex-grow text-sm mb-4">${game[currentLanguage].hook.substring(0, 100)}...</p>
+                        <div class="flex justify-between items-center text-sm font-semibold text-gray-500 border-t pt-3">
+                            <span title="${ui.players}"><i class="fa-solid fa-users mr-1"></i> ${game.stats.players}</span>
+                            <span title="${ui.time}"><i class="fa-regular fa-clock mr-1"></i> ${game.stats.time}</span>
+                            <span class="text-blue-600 group-hover:underline">${ui.seePitch} <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `</div></div>`;
+            contentDiv.innerHTML = html;
+        }
+
+        function renderPitch(gameId) {
+            const game = gamesData[gameId];
+            const content = game[currentLanguage];
+            const ui = uiData[currentLanguage];
+
+            // Setup per font-awesome vs Emoji
+            const isFaIcon = game.icon.startsWith('fa-');
+            const headerIconHtml = isFaIcon 
+                ? `<i class="fa-solid ${game.icon} mr-3"></i>` 
+                : `<span class="mr-3">${game.icon}</span>`;
+            
+            const backgroundIconHtml = isFaIcon
+                ? `<i class="fa-solid ${game.icon} absolute -bottom-4 -right-4 text-[150px] text-white opacity-20 select-none"></i>`
+                : `<span class="absolute -bottom-4 -right-4 text-[150px] opacity-20 select-none">${game.icon}</span>`;
+
+            let html = `
+                <div class="fade-in bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <div class="bg-${game.color}-600 p-8 text-white flex flex-col md:flex-row justify-between items-start md:items-center relative overflow-hidden">
+                        <div class="relative z-10">
+                            <button onclick="navigate('home')" class="text-${game.color}-100 hover:text-white mb-4 transition text-sm font-semibold">
+                                <i class="fa-solid fa-arrow-left mr-2"></i> ${ui.backBtn}
+                            </button>
+                            <h1 class="text-3xl md:text-5xl font-bold mb-3">${headerIconHtml}${game.title}</h1>
+                            <div class="flex flex-wrap gap-4 text-sm font-semibold text-${game.color}-100 bg-${game.color}-700 bg-opacity-40 p-3 rounded-lg inline-flex mt-2">
+                                <span title="${ui.players}"><i class="fa-solid fa-users mr-2"></i>${game.stats.players}</span>
+                                <span title="${ui.time}"><i class="fa-regular fa-clock mr-2"></i>${game.stats.time}</span>
+                                <span title="${ui.age}"><i class="fa-solid fa-child mr-2"></i>${game.stats.age}</span>
+                            </div>
+                        </div>
+                        ${backgroundIconHtml}
+                    </div>
+
+                    <div class="p-6 md:p-8">
+                        <div class="grid grid-cols-1 lg:grid-cols-5 gap-10">
+                            <div class="lg:col-span-3 space-y-8">
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-800 mb-2 flex items-center">
+                                        <i class="fa-solid fa-lightbulb text-yellow-500 mr-2 text-2xl"></i> 
+                                        ${ui.hookTitle}
+                                    </h3>
+                                    <p class="text-gray-700 text-lg leading-relaxed bg-gray-50 p-4 rounded-xl border-l-4 border-yellow-400 shadow-sm">${content.hook}</p>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-800 mb-2 flex items-center">
+                                        <i class="fa-solid fa-rotate text-blue-500 mr-2 text-2xl"></i> 
+                                        ${ui.flowTitle}
+                                    </h3>
+                                    <p class="text-gray-700 text-lg leading-relaxed">${content.flow}</p>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-800 mb-2 flex items-center">
+                                        <i class="fa-solid fa-bolt text-purple-500 mr-2 text-2xl"></i> 
+                                        ${ui.twistTitle}
+                                    </h3>
+                                    <p class="text-gray-700 text-lg leading-relaxed font-semibold text-purple-900 bg-purple-50 p-4 rounded-xl shadow-sm border border-purple-100">${content.twist}</p>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-800 mb-2 flex items-center">
+                                        <i class="fa-solid fa-flag-checkered text-green-500 mr-2 text-2xl"></i> 
+                                        ${ui.closeTitle}
+                                    </h3>
+                                    <p class="text-gray-700 text-lg leading-relaxed italic">${content.closing}</p>
+                                </div>
+                            </div>
+
+                            <div class="lg:col-span-2 space-y-6">
+                                <img src="images/${game.id}-main.jpg" alt="Immagine Principale" class="w-full aspect-video object-cover rounded-xl shadow-md border border-gray-200 bg-gray-50" onerror="this.outerHTML='<div class=\\'bg-gray-100 rounded-xl aspect-video flex flex-col items-center justify-center text-gray-400 shadow-inner border-2 border-dashed border-gray-300\\'><i class=\\'fa-regular fa-image text-4xl mb-2\\'></i><span class=\\'font-semibold text-center px-4 text-sm\\'>Manca file:<br>images/${game.id}-main.jpg</span></div>'">
+                                <img src="images/${game.id}-secondary.jpg" alt="Immagine Secondaria" class="w-full aspect-video object-cover rounded-xl shadow-md border border-gray-200 bg-gray-50" onerror="this.outerHTML='<div class=\\'bg-gray-100 rounded-xl aspect-video flex flex-col items-center justify-center text-gray-400 shadow-inner border-2 border-dashed border-gray-300\\'><i class=\\'fa-solid fa-camera-retro text-4xl mb-2\\'></i><span class=\\'font-semibold text-center px-4 text-sm\\'>Manca file:<br>images/${game.id}-secondary.jpg</span></div>'">
+
+                                ${content.emergency ? `
+                                    <div class="bg-red-50 border-2 border-red-200 rounded-xl p-5 mt-8 shadow-sm">
+                                        <h4 class="text-red-700 font-bold mb-3 flex items-center uppercase tracking-wider text-sm">
+                                            <i class="fa-solid fa-triangle-exclamation mr-2"></i> ${ui.emergencyTitle}
+                                        </h4>
+                                        <p class="text-xs text-red-600 mb-3 italic">${ui.emergencySub}</p>
+                                        <ul class="list-disc pl-5 space-y-2 text-sm text-red-900 font-medium">
+                                            ${content.emergency.map(item => `<li>${item}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            contentDiv.innerHTML = html;
+        }
+
+        updateLanguageFlags();
+        renderHome();
+    </script>
+</body>
+</html>

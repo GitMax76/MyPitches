@@ -1,25 +1,30 @@
-<!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- TITOLO E DESCRIZIONE BASE -->
     <title>JustMax - Board Game Designer Portfolio</title>
-    <meta name="description" content="Scopri i prototipi di giochi da tavolo creati da Massimiliano Sabato (JustMax). Puzzle spaziali, party game e meccaniche uniche ti aspettano!">
+    <meta name="description"
+        content="Scopri i prototipi di giochi da tavolo creati da Massimiliano Sabato (JustMax). Puzzle spaziali, party game e meccaniche uniche ti aspettano!">
 
     <!-- FAVICON -->
     <!-- Puoi sostituire "images/favicon.png" con la tua icona reale -->
     <link rel="icon" type="image/png" href="images/favicon.png">
     <!-- Favicon di fallback (un dado) finché non carichi la tua immagine -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
 
     <!-- OPEN GRAPH (Per anteprime su WhatsApp, Facebook, LinkedIn) -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://TUO-NOME-UTENTE.github.io/TUA-REPO/"> <!-- SOSTITUISCI CON IL TUO LINK GITHUB PAGES -->
+    <meta property="og:url" content="https://TUO-NOME-UTENTE.github.io/TUA-REPO/">
+    <!-- SOSTITUISCI CON IL TUO LINK GITHUB PAGES -->
     <meta property="og:title" content="JustMax - Board Game Designer Portfolio">
-    <meta property="og:description" content="Esplora i miei prototipi: Vietri, VideoClub, 4 Dadi in Padella e Sliding Kitties.">
-    <meta property="og:image" content="https://TUO-NOME-UTENTE.github.io/TUA-REPO/images/social-preview.jpg"> <!-- IMMAGINE DI ANTEPRIMA -->
+    <meta property="og:description"
+        content="Esplora i miei prototipi: Vietri, VideoClub, 4 Dadi in Padella e Sliding Kitties.">
+    <meta property="og:image" content="https://TUO-NOME-UTENTE.github.io/TUA-REPO/images/social-preview.jpg">
+    <!-- IMMAGINE DI ANTEPRIMA -->
 
     <!-- TWITTER CARDS (Per anteprime su X/Twitter) -->
     <meta name="twitter:card" content="summary_large_image">
@@ -30,57 +35,111 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- FontAwesome & Flag Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css" />
-    
+
     <!-- Zdog per il dado 3D -->
     <script src="https://unpkg.com/zdog@1/dist/zdog.dist.min.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-        body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; color: #1e293b; }
-        .fade-in { animation: fadeIn 0.4s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .game-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
-        .lang-active { border-bottom: 2px solid #3b82f6; opacity: 1; transform: scale(1.1); }
-        .lang-inactive { opacity: 0.5; filter: grayscale(50%); }
-        .lang-btn { transition: all 0.2s ease-in-out; }
-        .lang-btn:hover { opacity: 1; filter: grayscale(0%); transform: scale(1.1); }
-        
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        .lang-active {
+            border-bottom: 2px solid #3b82f6;
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .lang-inactive {
+            opacity: 0.5;
+            filter: grayscale(50%);
+        }
+
+        .lang-btn {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .lang-btn:hover {
+            opacity: 1;
+            filter: grayscale(0%);
+            transform: scale(1.1);
+        }
+
         /* Cursore personalizzato per il dado 3D interattivo */
-        .zdog-canvas { cursor: grab; }
-        .zdog-canvas:active { cursor: grabbing; }
+        .zdog-canvas {
+            cursor: grab;
+        }
+
+        .zdog-canvas:active {
+            cursor: grabbing;
+        }
     </style>
 </head>
+
 <body class="min-h-screen flex flex-col">
 
     <!-- Navbar -->
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4">
             <div class="flex justify-between items-center py-4">
-                
+
                 <!-- Brand Identity (con Dado 3D Animato) -->
                 <div class="flex items-center cursor-pointer" onclick="navigate('home')" title="Torna alla Home">
                     <canvas class="zdog-canvas mr-2" width="44" height="44"></canvas>
                     <span class="font-bold text-xl tracking-tight">Just<span class="text-blue-600">Max</span></span>
                 </div>
-                
+
                 <!-- Links Desktop -->
                 <div class="hidden md:flex space-x-6 text-sm font-semibold text-gray-600 items-center ml-10">
-                    <button onclick="navigate('home')" class="hover:text-blue-600 transition" id="nav-home">Home</button>
+                    <button onclick="navigate('home')" class="hover:text-blue-600 transition"
+                        id="nav-home">Home</button>
                     <button onclick="navigate('vietri')" class="hover:text-blue-600 transition">Vietri</button>
                     <button onclick="navigate('videoclub')" class="hover:text-blue-600 transition">VideoClub</button>
                     <button onclick="navigate('dadi')" class="hover:text-blue-600 transition">4 Dadi in Padella</button>
-                    <button onclick="navigate('kitties')" class="hover:text-blue-600 transition">Sliding Kitties</button>
+                    <button onclick="navigate('kitties')" class="hover:text-blue-600 transition">Sliding
+                        Kitties</button>
                 </div>
 
                 <!-- Language Selector -->
                 <div class="flex items-center space-x-3 border-l pl-4 ml-2">
-                    <button onclick="setLanguage('it')" id="lang-it" class="lang-btn text-2xl rounded-sm overflow-hidden shadow-sm" title="Italiano"><span class="fi fi-it"></span></button>
-                    <button onclick="setLanguage('en')" id="lang-en" class="lang-btn text-2xl rounded-sm overflow-hidden shadow-sm" title="English"><span class="fi fi-gb"></span></button>
-                    <button onclick="setLanguage('fr')" id="lang-fr" class="lang-btn text-2xl rounded-sm overflow-hidden shadow-sm" title="Français"><span class="fi fi-fr"></span></button>
+                    <button onclick="setLanguage('it')" id="lang-it"
+                        class="lang-btn text-2xl rounded-sm overflow-hidden shadow-sm" title="Italiano"><span
+                            class="fi fi-it"></span></button>
+                    <button onclick="setLanguage('en')" id="lang-en"
+                        class="lang-btn text-2xl rounded-sm overflow-hidden shadow-sm" title="English"><span
+                            class="fi fi-gb"></span></button>
+                    <button onclick="setLanguage('fr')" id="lang-fr"
+                        class="lang-btn text-2xl rounded-sm overflow-hidden shadow-sm" title="Français"><span
+                            class="fi fi-fr"></span></button>
                 </div>
 
                 <!-- Mobile Menu Button -->
@@ -91,14 +150,23 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Mobile Menu Panel -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 pt-2 pb-4 space-y-2 shadow-inner">
-            <button onclick="navigate('home')" class="block w-full text-left py-2 text-gray-700 font-semibold hover:text-blue-600" id="mob-nav-home">Home</button>
-            <button onclick="navigate('vietri')" class="block w-full text-left py-2 text-gray-700 font-semibold hover:text-blue-600">Vietri</button>
-            <button onclick="navigate('videoclub')" class="block w-full text-left py-2 text-gray-700 font-semibold hover:text-blue-600">VideoClub</button>
-            <button onclick="navigate('dadi')" class="block w-full text-left py-2 text-gray-700 font-semibold hover:text-blue-600">4 Dadi in Padella</button>
-            <button onclick="navigate('kitties')" class="block w-full text-left py-2 text-gray-700 font-semibold hover:text-blue-600">Sliding Kitties</button>
+        <div id="mobile-menu"
+            class="hidden md:hidden bg-white border-t border-gray-100 px-4 pt-2 pb-4 space-y-2 shadow-inner">
+            <button onclick="navigate('home')"
+                class="block w-full text-left py-2 text-gray-700 font-semibold hover:text-blue-600"
+                id="mob-nav-home">Home</button>
+            <button onclick="navigate('vietri')"
+                class="block w-full text-left py-2 text-gray-700 font-semibold hover:text-blue-600">Vietri</button>
+            <button onclick="navigate('videoclub')"
+                class="block w-full text-left py-2 text-gray-700 font-semibold hover:text-blue-600">VideoClub</button>
+            <button onclick="navigate('dadi')"
+                class="block w-full text-left py-2 text-gray-700 font-semibold hover:text-blue-600">4 Dadi in
+                Padella</button>
+            <button onclick="navigate('kitties')"
+                class="block w-full text-left py-2 text-gray-700 font-semibold hover:text-blue-600">Sliding
+                Kitties</button>
         </div>
     </nav>
 
@@ -108,7 +176,8 @@
     <!-- Footer -->
     <footer class="bg-gray-800 text-white py-6 mt-12">
         <div class="max-w-6xl mx-auto px-4 text-center">
-            <p class="text-sm text-gray-400">© 2026 Massimiliano Sabato (JustMax) - Board Game Designer. <span id="footer-text">Prototipi a scopo di playtest e pitching.</span></p>
+            <p class="text-sm text-gray-400">© 2026 Massimiliano Sabato (JustMax) - Board Game Designer. <span
+                    id="footer-text">Prototipi a scopo di playtest e pitching.</span></p>
         </div>
     </footer>
 
@@ -127,7 +196,7 @@
         const faces = new Group({ addTo: dice });
 
         // Colore Blu Tailwind (uguale a text-blue-600)
-        const diceColor = '#2563eb'; 
+        const diceColor = '#2563eb';
 
         const face = new Rect({
             addTo: faces,
@@ -184,7 +253,7 @@
 
         // --- INIZIO LOGICA PORTFOLIO ---
         let currentLanguage = 'it';
-        let currentPage = 'home'; 
+        let currentPage = 'home';
 
         const uiData = {
             it: {
@@ -203,7 +272,8 @@
                 closeTitle: "Vittoria & Chiusura",
                 emergencyTitle: "Scaletta di Emergenza",
                 emergencySub: "Se perdi il filo, usa questa lista:",
-                footer: "Prototipi a scopo di playtest e pitching."
+                footer: "Prototipi a scopo di playtest e pitching.",
+                playOnline: "Vai al sito"
             },
             en: {
                 homeTitle: "Hi, I'm Massimiliano! 👋",
@@ -221,7 +291,8 @@
                 closeTitle: "Winning & Closing",
                 emergencyTitle: "Pitch Emergency Card",
                 emergencySub: "Use this list if you forget the speech:",
-                footer: "Prototypes for playtesting and pitching purposes."
+                footer: "Prototypes for playtesting and pitching purposes.",
+                playOnline: "Go to Website"
             },
             fr: {
                 homeTitle: "Salut, je suis Massimiliano ! 👋",
@@ -239,13 +310,15 @@
                 closeTitle: "Victoire & Fin",
                 emergencyTitle: "Fiche d'Urgence",
                 emergencySub: "Si vous perdez le fil, utilisez cette liste :",
-                footer: "Prototypes à des fins de playtest et de pitch."
+                footer: "Prototypes à des fins de playtest et de pitch.",
+                playOnline: "Aller sur le site"
             }
         };
 
         const gamesData = {
             vietri: {
                 id: 'vietri',
+                link: 'https://gitmax76.github.io/Vietri-BoardGame/',
                 title: 'Vietri - Maestri della Ceramica',
                 icon: '🎨', // Emoji Tavolozza
                 color: 'blue',
@@ -288,6 +361,7 @@
             },
             videoclub: {
                 id: 'videoclub',
+                link: 'https://gitmax76.github.io/videoclubgame/',
                 title: 'VideoClub',
                 icon: '📼', // Emoji VHS
                 color: 'purple',
@@ -330,6 +404,7 @@
             },
             dadi: {
                 id: 'dadi',
+                link: 'https://gitmax76.github.io/4Dadi_in_Padella/',
                 title: '4 Dadi in Padella',
                 icon: '🍳', // Emoji Padella
                 color: 'orange',
@@ -372,6 +447,7 @@
             },
             kitties: {
                 id: 'kitties',
+                link: 'https://codepen.io/massimiliano-sabato/full/vENVYmG',
                 title: 'Sliding Kitties',
                 icon: '🐈', // Emoji Gattino
                 color: 'pink',
@@ -429,17 +505,17 @@
             });
             document.getElementById(`lang-${currentLanguage}`).classList.remove('lang-inactive');
             document.getElementById(`lang-${currentLanguage}`).classList.add('lang-active');
-            
+
             document.getElementById('nav-home').innerText = currentLanguage === 'fr' ? 'Accueil' : 'Home';
             document.getElementById('mob-nav-home').innerText = currentLanguage === 'fr' ? 'Accueil' : 'Home';
             document.getElementById('footer-text').innerText = uiData[currentLanguage].footer;
         }
 
         function navigate(page) {
-            mobileMenu.classList.add('hidden'); 
-            window.scrollTo(0,0);
+            mobileMenu.classList.add('hidden');
+            window.scrollTo(0, 0);
             currentPage = page;
-            
+
             if (page === 'home') {
                 renderHome();
             } else {
@@ -450,7 +526,7 @@
         function setLanguage(lang) {
             currentLanguage = lang;
             updateLanguageFlags();
-            if(currentPage === 'home') {
+            if (currentPage === 'home') {
                 renderHome();
             } else {
                 renderPitch(currentPage);
@@ -478,11 +554,11 @@
 
             for (const key in gamesData) {
                 const game = gamesData[key];
-                
+
                 // Riconosce se è un'icona di FontAwesome o una semplice Emoji
                 const isFaIcon = game.icon.startsWith('fa-');
-                const iconHtml = isFaIcon 
-                    ? `<i class="fa-solid ${game.icon}"></i>` 
+                const iconHtml = isFaIcon
+                    ? `<i class="fa-solid ${game.icon}"></i>`
                     : `<span>${game.icon}</span>`;
 
                 html += `
@@ -517,10 +593,10 @@
 
             // Setup per font-awesome vs Emoji
             const isFaIcon = game.icon.startsWith('fa-');
-            const headerIconHtml = isFaIcon 
-                ? `<i class="fa-solid ${game.icon} mr-3"></i>` 
+            const headerIconHtml = isFaIcon
+                ? `<i class="fa-solid ${game.icon} mr-3"></i>`
                 : `<span class="mr-3">${game.icon}</span>`;
-            
+
             const backgroundIconHtml = isFaIcon
                 ? `<i class="fa-solid ${game.icon} absolute -bottom-4 -right-4 text-[150px] text-white opacity-20 select-none"></i>`
                 : `<span class="absolute -bottom-4 -right-4 text-[150px] opacity-20 select-none">${game.icon}</span>`;
@@ -538,6 +614,13 @@
                                 <span title="${ui.time}"><i class="fa-regular fa-clock mr-2"></i>${game.stats.time}</span>
                                 <span title="${ui.age}"><i class="fa-solid fa-child mr-2"></i>${game.stats.age}</span>
                             </div>
+                            ${game.link ? `
+                            <div class="mt-4">
+                                <a href="${game.link}" target="_blank" class="inline-flex items-center bg-white text-${game.color}-600 font-bold py-2 px-4 rounded-lg shadow hover:bg-gray-100 transition">
+                                    <i class="fa-solid fa-play mr-2"></i> ${ui.playOnline}
+                                </a>
+                            </div>
+                            ` : ''}
                         </div>
                         ${backgroundIconHtml}
                     </div>
@@ -598,7 +681,7 @@
                     </div>
                 </div>
             `;
-            
+
             contentDiv.innerHTML = html;
         }
 
@@ -606,4 +689,5 @@
         renderHome();
     </script>
 </body>
+
 </html>
